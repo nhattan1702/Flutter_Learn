@@ -5,15 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 
 class WelcomeScreen extends StatefulWidget {
-
   static const String id = 'welcome_screen';
 
   @override
   _WelcomeScreenState createState() => _WelcomeScreenState();
 }
 
-class _WelcomeScreenState extends State<WelcomeScreen> with SingleTickerProviderStateMixin {
-
+class _WelcomeScreenState extends State<WelcomeScreen>
+    with SingleTickerProviderStateMixin {
   late AnimationController controller;
   late Animation animation;
 
@@ -31,13 +30,11 @@ class _WelcomeScreenState extends State<WelcomeScreen> with SingleTickerProvider
     });
   }
 
-
   @override
   void dispose() {
     controller.dispose();
     super.dispose();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -63,11 +60,11 @@ class _WelcomeScreenState extends State<WelcomeScreen> with SingleTickerProvider
                     TypewriterAnimatedText(
                       'Flash Chat',
                       textStyle: TextStyle(
-                        fontSize: 45.0,
-                        fontWeight: FontWeight.w900,
-                        color: Colors.black
-                      ),
-                    speed: const Duration(milliseconds: 500),                    )
+                          fontSize: 45.0,
+                          fontWeight: FontWeight.w900,
+                          color: Colors.black),
+                      speed: const Duration(milliseconds: 500),
+                    )
                   ],
                 ),
               ],
@@ -75,30 +72,23 @@ class _WelcomeScreenState extends State<WelcomeScreen> with SingleTickerProvider
             SizedBox(
               height: 48.0,
             ),
-            
             RoundedButton(
-              title: 'Login', 
-              color: Colors.lightBlueAccent, 
+              title: 'Login',
+              color: Colors.lightBlueAccent,
               onPressed: () {
-                  Navigator.pushNamed(context, LoginScreen.id);
-                }, 
-              ),
-
+                Navigator.pushNamed(context, LoginScreen.id);
+              },
+            ),
             RoundedButton(
-              title: 'Register', 
-              color: Colors.blueAccent, 
+              title: 'Register',
+              color: Colors.blueAccent,
               onPressed: () {
-                  Navigator.pushNamed(context, RegistrationScreen.id);
-                }, 
-              ),
-           
+                Navigator.pushNamed(context, RegistrationScreen.id);
+              },
+            ),
           ],
         ),
       ),
     );
   }
 }
-
-
-
-
