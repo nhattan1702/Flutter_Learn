@@ -48,6 +48,7 @@ class RegistrationScreen extends StatelessWidget {
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 24.0),
                   child: Form(
+                    key: _formKey,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -93,7 +94,7 @@ class RegistrationScreen extends StatelessWidget {
                         RoundedButton(
                           title: 'Register',
                           color: Colors.blueAccent,
-                          onPressed: () {
+                           onPressed: () {
                             final email = _emailController.text.trim();
                             final password = _passwordController.text.trim();
                             if (_formKey.currentState!.validate()) {
