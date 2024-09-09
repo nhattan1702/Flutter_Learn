@@ -89,18 +89,6 @@ class RegistrationScreen extends StatelessWidget {
                           decoration: kTestFieldDecoration.copyWith(
                               hintText: 'Enter your password'),
                         ),
-                        SizedBox(height: 8.0),
-                        TextFormField(
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              print('Không được để trống tên');
-                            }
-                            return null;
-                          },
-                          textAlign: TextAlign.center,
-                          decoration: kTestFieldDecoration.copyWith(
-                              hintText: 'Enter your name'),
-                        ),
                         SizedBox(height: 24.0),
                         RoundedButton(
                           title: 'Register',

@@ -4,12 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../models/user_model.dart';
 
 class AuthService {
-  final FirebaseAuth _firebaseAuth;
-  final FirebaseFirestore _firestore;
-
-  AuthService({FirebaseAuth? firebaseAuth, FirebaseFirestore? firestore})
-      : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
-        _firestore = firestore ?? FirebaseFirestore.instance;
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Future<User?> createUserWithEmailAndPassword(
       String email, String password) async {
@@ -48,11 +44,13 @@ class AuthService {
   }
 
   Future<UserModel?> getUserFromFirestore(String uid) async {
-    DocumentSnapshot userDoc =
-        await _firestore.collection('users').doc(uid).get();
-    if (userDoc.exists) {
-      return UserModel.fromMap(userDoc.data() as Map<String, dynamic>);
-    }
+    try {
+      DocumentSnapshot userDoc =
+          await _firestore.collection('users').doc(uid).get();
+      if (userDoc.exists) {
+        return UserModel.fromMap(userDoc.data() as Map<String, dynamic>);
+      }
+    } catch (e) {}
     return null;
   }
 }

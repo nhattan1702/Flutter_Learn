@@ -11,7 +11,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(AuthLoading());
       try {
         final user = await authRepository.signUp(event.email, event.password);
-
         if (user == null) {
           emit(AuthError("Đăng ký không thành công"));
         } else {
@@ -26,7 +25,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(AuthLoading());
       try {
         final user = await authRepository.signIn(event.email, event.password);
-
         if (user == null) {
           emit(AuthError("Đăng nhập không thành công"));
         } else {

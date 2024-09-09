@@ -8,24 +8,30 @@ class AuthRepository {
   AuthRepository({required this.authService});
 
   Future<UserModel?> signUp(String email, String password) async {
-    User? user =
-        await authService.createUserWithEmailAndPassword(email, password);
-    if (user != null) {
-      UserModel userModel = UserModel(
-        id: user.uid,
-        email: email,
-        password: password,
-        name: '',
-      );
-      await authService.saveUserToFirestore(userModel);
-      return userModel;
-    }
+    try {
+      User? user =
+          await authService.createUserWithEmailAndPassword(email, password);
+      if (user != null) {
+        UserModel userModel = UserModel(
+          id: user.uid,
+          email: email,
+          password: password,
+        );
+        await authService.saveUserToFirestore(userModel);
+        return userModel;
+      }
+    } catch (e) {}
+    return null;
   }
 
   Future<UserModel?> signIn(String email, String password) async {
-    User? user = await authService.signInWithEmailAndPassword(email, password);
-    if (user != null) {
-      return await authService.getUserFromFirestore(user.uid);
-    }
+    try {
+      User? user =
+          await authService.signInWithEmailAndPassword(email, password);
+      if (user != null) {
+        return await authService.getUserFromFirestore(user.uid);
+      }
+    } catch (e) {}
+    return null;
   }
 }
