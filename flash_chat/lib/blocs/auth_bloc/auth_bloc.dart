@@ -1,6 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../repositories/auth_repository.dart';
-import '../../services/auth_service.dart';
 import 'auth_event.dart';
 import 'auth_state.dart';
 
@@ -11,18 +10,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<RegisterUserEvent>((event, emit) async {
       emit(AuthLoading());
       try {
-        final user = await authRepository.register(event.email, event.password);
-        if (user != null) {
-          emit(Authenticated(user: user));
+        final user = await authRepository.signUp(event.email, event.password);
+
+        if (user == null) {
+          emit(AuthError("Đăng ký không thành công"));
         } else {
-          emit(AuthError("Đăng ký không thành công "));
+          emit(Authenticated(user: user));
         }
       } catch (e) {
-        if (e is SignUpWithEmailAndPasswordFailure) {
-          emit(AuthError(e.message));
-        } else {
-          emit(AuthError(e.toString()));
-        }
+        emit(AuthError(e.toString()));
       }
     });
 
@@ -30,17 +26,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(AuthLoading());
       try {
         final user = await authRepository.signIn(event.email, event.password);
-        if (user != null) {
-          emit(Authenticated(user: user));
+
+        if (user == null) {
+          emit(AuthError("Đăng nhập không thành công"));
         } else {
-          emit(AuthError("Đăng nhập không thành không"));
+          emit(Authenticated(user: user));
         }
       } catch (e) {
-        if (e is SignInWithEmailAndPasswordFailure) {
-          emit(AuthError(e.message));
-        } else {
-          emit(AuthError("Lỗi"));
-        }
+        emit(AuthError(e.toString()));
       }
     });
   }

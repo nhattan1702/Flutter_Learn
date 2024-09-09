@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flash_chat/constants.dart';
+import 'package:flash_chat/common/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flash_chat/services/firestore_service.dart';
 import 'messages_stream.dart';
@@ -58,7 +58,7 @@ class _ChatScreenState extends State<ChatScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             if (loggedInUser !=
-                null) // Kiểm tra nếu loggedInUser không phải null
+                null) 
               Expanded(
                 child: MessagesStream(
                   firestoreService: _firestoreService,

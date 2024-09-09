@@ -1,11 +1,21 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class AuthService {
-  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+import '../models/user_model.dart';
 
-  Future<User?> register(String email, String password) async {
+class AuthService {
+  final FirebaseAuth _firebaseAuth;
+  final FirebaseFirestore _firestore;
+
+  AuthService({FirebaseAuth? firebaseAuth, FirebaseFirestore? firestore})
+      : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
+        _firestore = firestore ?? FirebaseFirestore.instance;
+
+  Future<User?> createUserWithEmailAndPassword(
+      String email, String password) async {
     try {
-      final userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
+      UserCredential userCredential =
+          await _firebaseAuth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
@@ -17,17 +27,33 @@ class AuthService {
     }
   }
 
-  Future<User?> signIn(String email, String password) async {
+  Future<void> saveUserToFirestore(UserModel user) async {
+    await _firestore.collection('users').doc(user.id).set(user.toMap());
+  }
+
+  Future<User?> signInWithEmailAndPassword(
+      String email, String password) async {
     try {
-      final userCredential = await _firebaseAuth.signInWithEmailAndPassword(
-          email: email, password: password);
+      UserCredential userCredential =
+          await _firebaseAuth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
       return userCredential.user;
     } on FirebaseAuthException catch (e) {
-      print("FirebaseAuthException Code: ${e.code}");
       throw SignInWithEmailAndPasswordFailure.fromCode(e.code);
     } catch (e) {
       throw const SignInWithEmailAndPasswordFailure();
     }
+  }
+
+  Future<UserModel?> getUserFromFirestore(String uid) async {
+    DocumentSnapshot userDoc =
+        await _firestore.collection('users').doc(uid).get();
+    if (userDoc.exists) {
+      return UserModel.fromMap(userDoc.data() as Map<String, dynamic>);
+    }
+    return null;
   }
 }
 

@@ -1,16 +1,31 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import '../services/auth_service.dart';
+import '../models/user_model.dart';
 
 class AuthRepository {
   final AuthService authService;
 
   AuthRepository({required this.authService});
 
-  Future<User?> register(String email, String password) async {
-    return await authService.register(email, password);
+  Future<UserModel?> signUp(String email, String password) async {
+    User? user =
+        await authService.createUserWithEmailAndPassword(email, password);
+    if (user != null) {
+      UserModel userModel = UserModel(
+        id: user.uid,
+        email: email,
+        password: password,
+        name: '',
+      );
+      await authService.saveUserToFirestore(userModel);
+      return userModel;
+    }
   }
 
-  Future<User?> signIn(String email, String password) async {
-    return await authService.signIn(email, password);
+  Future<UserModel?> signIn(String email, String password) async {
+    User? user = await authService.signInWithEmailAndPassword(email, password);
+    if (user != null) {
+      return await authService.getUserFromFirestore(user.uid);
+    }
   }
 }

@@ -19,6 +19,9 @@ dependencies:
   flutter_bloc: ^8.1.6
   auto_scroll: ^0.2.0
   formz: ^0.7.0
+  equatable: ^2.0.0
+  gradient_slide_to_act: ^0.0.2
+  slidable_button: ^3.0.0+1
 
 dev_dependencies:
   flutter_test:
