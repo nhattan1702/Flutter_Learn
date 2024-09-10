@@ -29,7 +29,7 @@ class SliderButton extends StatelessWidget {
       ),
       onChanged: (position) {
         if (position == SlidableButtonPosition.end) {
-          Navigator.pushNamed(context, routeName);
+          Navigator.pushReplacementNamed(context, routeName);
         }
       },
     );

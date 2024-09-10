@@ -22,6 +22,7 @@ dependencies:
   equatable: ^2.0.0
   gradient_slide_to_act: ^0.0.2
   slidable_button: ^3.0.0+1
+  image_picker: ^1.1.2
 
 dev_dependencies:
   flutter_test:
@@ -36,3 +37,4 @@ flutter:
 
   assets:
       - images/logo.png
+      - images/default_avatar.jpg

@@ -4,7 +4,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flash_chat/services/firestore_service.dart';
 import 'messages_stream.dart';
 
-
 class ChatScreen extends StatefulWidget {
   static const String id = 'chat_screen';
 
@@ -18,6 +17,8 @@ class _ChatScreenState extends State<ChatScreen> {
   late String messageText;
   User? loggedInUser;
   final ScrollController _scrollController = ScrollController();
+  late String otherUserEmail;
+  late String currentUserEmail;
 
   @override
   void initState() {
@@ -30,12 +31,26 @@ class _ChatScreenState extends State<ChatScreen> {
     if (user != null) {
       setState(() {
         loggedInUser = user;
+        currentUserEmail = user.email ?? '';
+
+        final args =
+            ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+        if (args != null) {
+          otherUserEmail = args['otherUserEmail'] ?? '';
+        }
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final args =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    if (args != null) {
+      currentUserEmail = args['currentUserEmail'] ?? '';
+      otherUserEmail = args['otherUserEmail'] ?? '';
+    }
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -57,13 +72,13 @@ class _ChatScreenState extends State<ChatScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            if (loggedInUser !=
-                null) 
+            if (loggedInUser != null)
               Expanded(
                 child: MessagesStream(
                   firestoreService: _firestoreService,
                   loggedInUser: loggedInUser!,
                   scrollController: _scrollController,
+                  otherUserEmail: otherUserEmail,
                 ),
               ),
             Container(
@@ -85,7 +100,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       messageTextController.clear();
                       if (loggedInUser != null) {
                         _firestoreService.sendMessage(
-                            messageText, loggedInUser!.email.toString());
+                            messageText, currentUserEmail, otherUserEmail);
                         WidgetsBinding.instance.addPostFrameCallback((_) {
                           _scrollController.animateTo(
                             _scrollController.position.maxScrollExtent,

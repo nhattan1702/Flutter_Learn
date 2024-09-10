@@ -40,70 +40,68 @@ class _WelcomeScreenState extends State<WelcomeScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Expanded(
-        child: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                AppColors.matchaLight,
-                AppColors.matchaDark,
-              ],
-            ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              AppColors.matchaLight,
+              AppColors.matchaDark,
+            ],
           ),
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 24.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                Row(
-                  children: <Widget>[
-                    Hero(
-                      tag: 'logo',
-                      child: Container(
-                        child: Image.asset('images/logo.png'),
-                        height: 60.0,
-                      ),
+        ),
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 24.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              Row(
+                children: <Widget>[
+                  Hero(
+                    tag: 'logo',
+                    child: Container(
+                      child: Image.asset('images/logo.png'),
+                      height: 60.0,
                     ),
-                    AnimatedTextKit(
-                      animatedTexts: [
-                        TypewriterAnimatedText(
-                          'Flash Chat',
-                          textStyle: TextStyle(
-                              fontSize: 45.0,
-                              fontWeight: FontWeight.w900,
-                              color: AppColors.textColor),
-                          speed: const Duration(milliseconds: 500),
-                        )
-                      ],
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: 48.0,
-                ),
-                // RoundedButton(
-                //   title: 'Login',
-                //   color: Colors.lightBlueAccent,
-                //   onPressed: () {
-                //     Navigator.pushNamed(context, LoginScreen.id);
-                //   },
-                // ),
-                // RoundedButton(
-                //   title: 'Register',
-                //   color: Colors.blueAccent,
-                //   onPressed: () {
-                //     Navigator.pushNamed(context, RegistrationScreen.id);
-                //   },
-                // ),
-                SliderButton(
-                  title: 'Get',
-                  routeName: LoginScreen.id,
-                )
-              ],
-            ),
+                  ),
+                  AnimatedTextKit(
+                    animatedTexts: [
+                      TypewriterAnimatedText(
+                        'Flash Chat',
+                        textStyle: TextStyle(
+                            fontSize: 45.0,
+                            fontWeight: FontWeight.w900,
+                            color: AppColors.textColor),
+                        speed: const Duration(milliseconds: 500),
+                      )
+                    ],
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 48.0,
+              ),
+              // RoundedButton(
+              //   title: 'Login',
+              //   color: Colors.lightBlueAccent,
+              //   onPressed: () {
+              //     Navigator.pushNamed(context, LoginScreen.id);
+              //   },
+              // ),
+              // RoundedButton(
+              //   title: 'Register',
+              //   color: Colors.blueAccent,
+              //   onPressed: () {
+              //     Navigator.pushNamed(context, RegistrationScreen.id);
+              //   },
+              // ),
+              SliderButton(
+                title: 'Get',
+                routeName: LoginScreen.id,
+              )
+            ],
           ),
         ),
       ),

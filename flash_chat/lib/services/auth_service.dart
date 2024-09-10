@@ -19,7 +19,7 @@ class AuthService {
     } on FirebaseAuthException catch (e) {
       throw SignUpWithEmailAndPasswordFailure.fromCode(e.code);
     } catch (e) {
-      throw const SignUpWithEmailAndPasswordFailure();
+      throw SignUpWithEmailAndPasswordFailure();
     }
   }
 
@@ -39,7 +39,7 @@ class AuthService {
     } on FirebaseAuthException catch (e) {
       throw SignInWithEmailAndPasswordFailure.fromCode(e.code);
     } catch (e) {
-      throw const SignInWithEmailAndPasswordFailure();
+      throw SignInWithEmailAndPasswordFailure();
     }
   }
 

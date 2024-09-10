@@ -8,7 +8,7 @@ import '../blocs/auth_bloc/auth_state.dart';
 import '../common/color.dart';
 import '../components/rounded_button.dart';
 import '../common/constants.dart';
-import 'screens_chat/chat_screen.dart';
+import 'package:image_picker/image_picker.dart';
 
 class RegistrationScreen extends StatelessWidget {
   static const String id = 'registration_screen';
@@ -35,7 +35,10 @@ class RegistrationScreen extends StatelessWidget {
         child: BlocConsumer<AuthBloc, AuthState>(
           listener: (context, state) {
             if (state is Authenticated) {
-              Navigator.pushNamed(context, ChatScreen.id);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Đăng Ký thành công')),
+              );
+              Navigator.pushReplacementNamed(context, LoginScreen.id);
             } else if (state is AuthError) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text(state.message)),
@@ -66,7 +69,7 @@ class RegistrationScreen extends StatelessWidget {
                         TextFormField(
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              print('Không được để trống email');
+                              return ('Không được để trống email');
                             }
                             return null;
                           },
@@ -80,7 +83,7 @@ class RegistrationScreen extends StatelessWidget {
                         TextFormField(
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              print('Không được để trống mật khẩu');
+                              return ('Không được để trống mật khẩu');
                             }
                             return null;
                           },
@@ -94,7 +97,7 @@ class RegistrationScreen extends StatelessWidget {
                         RoundedButton(
                           title: 'Register',
                           color: Colors.blueAccent,
-                           onPressed: () {
+                          onPressed: () {
                             final email = _emailController.text.trim();
                             final password = _passwordController.text.trim();
                             if (_formKey.currentState!.validate()) {
@@ -108,7 +111,8 @@ class RegistrationScreen extends StatelessWidget {
                         SizedBox(height: 12),
                         InkWell(
                           onTap: () {
-                            Navigator.pushNamed(context, LoginScreen.id);
+                            Navigator.pushReplacementNamed(
+                                context, LoginScreen.id);
                           },
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.end,

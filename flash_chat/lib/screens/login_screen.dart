@@ -1,4 +1,5 @@
 import 'package:flash_chat/screens/registration_screen.dart';
+import 'package:flash_chat/screens/screens_chat/listchat_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
@@ -35,7 +36,7 @@ class LoginScreen extends StatelessWidget {
         child: BlocConsumer<AuthBloc, AuthState>(
           listener: (context, state) {
             if (state is Authenticated) {
-              Navigator.pushNamed(context, ChatScreen.id);
+              Navigator.pushReplacementNamed(context, ListChatScreen.id);
             } else if (state is AuthError) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text(state.message)),
@@ -109,7 +110,7 @@ class LoginScreen extends StatelessWidget {
                           SizedBox(height: 12.0),
                           InkWell(
                             onTap: () {
-                              Navigator.pushNamed(
+                              Navigator.pushReplacementNamed(
                                   context, RegistrationScreen.id);
                             },
                             child: Column(

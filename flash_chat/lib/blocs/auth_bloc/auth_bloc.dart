@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../repositories/auth_repository.dart';
+import '../../services/auth_service.dart';
 import 'auth_event.dart';
 import 'auth_state.dart';
 
@@ -17,7 +18,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           emit(Authenticated(user: user));
         }
       } catch (e) {
-        emit(AuthError(e.toString()));
+        if (e is SignUpWithEmailAndPasswordFailure) {
+          emit(AuthError(e.message));
+        } else {
+          emit(AuthError(e.toString()));
+        }
       }
     });
 
@@ -31,7 +36,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           emit(Authenticated(user: user));
         }
       } catch (e) {
-        emit(AuthError(e.toString()));
+        if (e is SignUpWithEmailAndPasswordFailure) {
+          emit(AuthError(e.message));
+        } else {
+          emit(AuthError(e.toString()));
+        }
       }
     });
   }

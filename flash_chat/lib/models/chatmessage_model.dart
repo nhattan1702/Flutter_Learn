@@ -1,26 +1,34 @@
-class ChatmessageModel {
-  final String id;
+class ChatMessageModel {
   final String message;
-  final String senderId;
+  final String sender;
+  final String receiver;
   final DateTime time;
+  final String chatId;
 
-  ChatmessageModel({
-    required this.id,
-    required this.message,
-    required this.senderId,
-    required this.time,
-  });
+  ChatMessageModel(
+      {required this.message,
+      required this.sender,
+      required this.time,
+      required this.receiver,
+      required this.chatId});
 
   Map<String, dynamic> toMap() {
-    return {'id': id, 'message': message, 'senderId': senderId, 'time': time};
+    return {
+      'message': message,
+      'senderId': sender,
+      'time': time,
+      'receiveId': receiver,
+      'chatId': chatId
+    };
   }
 
-  factory ChatmessageModel.fromMap(Map<String, dynamic> json) {
-    return ChatmessageModel(
-      id: json['id'] as String,
+  factory ChatMessageModel.fromMap(Map<String, dynamic> json) {
+    return ChatMessageModel(
       message: json['message'] as String,
-      senderId: json['senderId'] as String,
+      sender: json['sender'] as String,
       time: json['time'] as DateTime,
+      receiver: json['receive'] as String,
+      chatId: json['chatId'] as String,
     );
   }
 }
