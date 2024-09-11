@@ -1,10 +1,7 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:form_validator/form_validator.dart';
 
 import '../blocs/auth_bloc/auth_bloc.dart';
 import '../blocs/auth_bloc/auth_event.dart';
@@ -25,20 +22,14 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  File? _imageFile;
 
   final ImagePicker _picker = ImagePicker();
-
-  String? _emailError;
-  String? _passwordError;
 
   Future<void> _pickImage() async {
     final XFile? pickedFile =
         await _picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
-      setState(() {
-        _imageFile = File(pickedFile.path);
-      });
+      setState(() {});
     }
   }
 
@@ -133,11 +124,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                         onPressed: () {
                           final email = _emailController.text.trim();
                           final password = _passwordController.text.trim();
-
-                          setState(() {
-                            _emailError = null;
-                            _passwordError = null;
-                          });
 
                           if (_formKey.currentState!.validate()) {
                             context.read<AuthBloc>().add(

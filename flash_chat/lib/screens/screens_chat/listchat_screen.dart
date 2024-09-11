@@ -53,8 +53,8 @@ class _ListChatScreenState extends State<ListChatScreen> {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              AppColors.matchaLight,
-              AppColors.matchaDark,
+              AppColors().default1,
+              AppColors().default2,
             ],
           ),
         ),
