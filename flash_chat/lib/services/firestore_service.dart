@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flash_chat/models/chatmessage_model.dart';
 
 class FirestoreService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -54,7 +53,7 @@ class FirestoreService {
       final snapshot = await _firestore.collection('users').get();
       return snapshot.docs
           .where((doc) => doc['email'] != currentUserEmail)
-          .map((doc) => doc.data() as Map<String, dynamic>)
+          .map((doc) => doc.data())
           .toList();
     } catch (e) {
       print(e);

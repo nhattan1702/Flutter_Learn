@@ -1,13 +1,16 @@
+import 'dart:io';
+
 class UserModel {
   final String id;
   final String email;
   final String password;
-  //final String image;
+  //final File image;
 
   UserModel({
     required this.id,
     required this.email,
     required this.password,
+   // required this.image
   });
 
   factory UserModel.fromMap(Map<String, dynamic> map) {
@@ -15,7 +18,7 @@ class UserModel {
       id: map['id'] ?? '',
       email: map['email'] ?? '',
       password: map['password'] ?? '',
-      //image: map['image'] ?? '',
+   //   image: map['image'] ?? '',
     );
   }
 
@@ -24,7 +27,7 @@ class UserModel {
       'id': id,
       'email': email,
       'password': password,
-      //'image': image
+  //    'image': image
     };
   }
 }

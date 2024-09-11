@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import '../services/auth_service.dart';
 import '../models/user_model.dart';
@@ -15,7 +17,7 @@ class AuthRepository {
         id: user.uid,
         email: email,
         password: password,
-       // image: image,
+        //     image: image,
       );
       await authService.saveUserToFirestore(userModel);
       return userModel;
@@ -30,5 +32,4 @@ class AuthRepository {
     }
     return null;
   }
-  
 }

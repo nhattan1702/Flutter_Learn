@@ -36,7 +36,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           emit(Authenticated(user: user));
         }
       } catch (e) {
-        if (e is SignUpWithEmailAndPasswordFailure) {
+        if (e is SignInWithEmailAndPasswordFailure) {
           emit(AuthError(e.message));
         } else {
           emit(AuthError(e.toString()));

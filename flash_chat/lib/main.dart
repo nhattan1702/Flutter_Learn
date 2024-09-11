@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flash_chat/blocs/auth_bloc/auth_bloc.dart';
 import 'package:flash_chat/repositories/auth_repository.dart';
 import 'package:flash_chat/screens/screens_chat/listchat_screen.dart';
+import 'package:flash_chat/screens/splash_screen.dart';
 import 'package:flash_chat/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flash_chat/screens/welcome_screen.dart';
@@ -43,14 +44,15 @@ class FlashChat extends StatelessWidget {
             bodyLarge: TextStyle(color: Colors.black54),
           ),
         ),
-        home: WelcomeScreen(),
-        initialRoute: WelcomeScreen.id,
+        home: SplashScreen(),
+        initialRoute: SplashScreen.id,
         routes: {
           WelcomeScreen.id: (context) => WelcomeScreen(),
           LoginScreen.id: (context) => LoginScreen(),
           RegistrationScreen.id: (context) => RegistrationScreen(),
           ChatScreen.id: (context) => ChatScreen(),
           ListChatScreen.id: (context) => ListChatScreen(),
+          SplashScreen.id: (context) => SplashScreen(),
         },
       ),
     );

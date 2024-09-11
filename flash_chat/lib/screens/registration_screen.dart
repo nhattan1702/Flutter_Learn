@@ -1,22 +1,46 @@
-import 'package:flash_chat/screens/login_screen.dart';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:form_validator/form_validator.dart';
+
 import '../blocs/auth_bloc/auth_bloc.dart';
 import '../blocs/auth_bloc/auth_event.dart';
 import '../blocs/auth_bloc/auth_state.dart';
 import '../common/color.dart';
 import '../components/rounded_button.dart';
 import '../common/constants.dart';
-import 'package:image_picker/image_picker.dart';
+import 'login_screen.dart';
 
-class RegistrationScreen extends StatelessWidget {
+class RegistrationScreen extends StatefulWidget {
   static const String id = 'registration_screen';
 
+  @override
+  _RegistrationScreenState createState() => _RegistrationScreenState();
+}
+
+class _RegistrationScreenState extends State<RegistrationScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-
   final _formKey = GlobalKey<FormState>();
+  File? _imageFile;
+
+  final ImagePicker _picker = ImagePicker();
+
+  String? _emailError;
+  String? _passwordError;
+
+  Future<void> _pickImage() async {
+    final XFile? pickedFile =
+        await _picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _imageFile = File(pickedFile.path);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,8 +51,8 @@ class RegistrationScreen extends StatelessWidget {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              AppColors.matchaLight,
-              AppColors.matchaDark,
+              AppColors().default1,
+              AppColors().default2,
             ],
           ),
         ),
@@ -47,87 +71,108 @@ class RegistrationScreen extends StatelessWidget {
           },
           builder: (context, state) {
             return ModalProgressHUD(
-                inAsyncCall: state is AuthLoading,
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 24.0),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: <Widget>[
-                        Flexible(
-                          child: Hero(
-                            tag: 'logo',
-                            child: Container(
-                              height: 200.0,
-                              child: Image.asset('images/logo.png'),
+              inAsyncCall: state is AuthLoading,
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 24.0),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: <Widget>[
+                      Flexible(
+                        child: Hero(
+                          tag: 'logo',
+                          child: Container(
+                            height: 200.0,
+                            child: Image.asset('images/logo.png'),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 48.0),
+                      TextFormField(
+                        controller: _emailController,
+                        textAlign: TextAlign.center,
+                        keyboardType: TextInputType.emailAddress,
+                        decoration: kTestFieldDecoration.copyWith(
+                          hintText: 'Enter your email',
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Không được để trống email';
+                          }
+                          return null;
+                          // else {
+                          //   return _emailError;
+                          // }
+                        },
+                      ),
+                      SizedBox(height: 8.0),
+                      TextFormField(
+                        controller: _passwordController,
+                        textAlign: TextAlign.center,
+                        obscureText: true,
+                        decoration: kTestFieldDecoration.copyWith(
+                            hintText: 'Enter your password',
+                            errorStyle: TextStyle(color: Colors.red)),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Không được để trống mật khẩu';
+                          }
+                          return null;
+                          // else {
+                          //   return _passwordError;
+                          // }
+                        },
+                      ),
+                      SizedBox(height: 24.0),
+                      SizedBox(height: 24.0),
+                      RoundedButton(
+                        title: 'Register',
+                        color: Colors.blueAccent,
+                        onPressed: () {
+                          final email = _emailController.text.trim();
+                          final password = _passwordController.text.trim();
+
+                          setState(() {
+                            _emailError = null;
+                            _passwordError = null;
+                          });
+
+                          if (_formKey.currentState!.validate()) {
+                            context.read<AuthBloc>().add(
+                                  RegisterUserEvent(
+                                    email: email,
+                                    password: password,
+                                    // image: _imageFile!,
+                                  ),
+                                );
+                          }
+                        },
+                      ),
+                      SizedBox(height: 12),
+                      InkWell(
+                        onTap: () {
+                          Navigator.pushReplacementNamed(
+                            context,
+                            LoginScreen.id,
+                          );
+                        },
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.all(10.0),
+                              child: Text("Bạn đã có tài khoản? Đăng Nhập"),
                             ),
-                          ),
+                          ],
                         ),
-                        SizedBox(height: 48.0),
-                        TextFormField(
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return ('Không được để trống email');
-                            }
-                            return null;
-                          },
-                          controller: _emailController,
-                          textAlign: TextAlign.center,
-                          keyboardType: TextInputType.emailAddress,
-                          decoration: kTestFieldDecoration.copyWith(
-                              hintText: 'Enter your email'),
-                        ),
-                        SizedBox(height: 8.0),
-                        TextFormField(
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return ('Không được để trống mật khẩu');
-                            }
-                            return null;
-                          },
-                          controller: _passwordController,
-                          textAlign: TextAlign.center,
-                          obscureText: true,
-                          decoration: kTestFieldDecoration.copyWith(
-                              hintText: 'Enter your password'),
-                        ),
-                        SizedBox(height: 24.0),
-                        RoundedButton(
-                          title: 'Register',
-                          color: Colors.blueAccent,
-                          onPressed: () {
-                            final email = _emailController.text.trim();
-                            final password = _passwordController.text.trim();
-                            if (_formKey.currentState!.validate()) {
-                              context.read<AuthBloc>().add(
-                                    RegisterUserEvent(
-                                        email: email, password: password),
-                                  );
-                            }
-                          },
-                        ),
-                        SizedBox(height: 12),
-                        InkWell(
-                          onTap: () {
-                            Navigator.pushReplacementNamed(
-                                context, LoginScreen.id);
-                          },
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.all(10.0),
-                                child: Text("Bạn đã có tài khoản? Đăng Nhập"),
-                              ),
-                            ],
-                          ),
-                        )
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ));
+                ),
+              ),
+            );
           },
         ),
       ),

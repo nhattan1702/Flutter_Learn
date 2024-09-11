@@ -9,7 +9,6 @@ import '../common/constants.dart';
 import '../blocs/auth_bloc/auth_bloc.dart';
 import '../blocs/auth_bloc/auth_event.dart';
 import '../blocs/auth_bloc/auth_state.dart';
-import 'screens_chat/chat_screen.dart';
 
 class LoginScreen extends StatelessWidget {
   static const String id = 'login_screen';
@@ -27,10 +26,7 @@ class LoginScreen extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              AppColors.matchaLight,
-              AppColors.matchaDark,
-            ],
+            colors: [AppColors().default1, AppColors().default2],
           ),
         ),
         child: BlocConsumer<AuthBloc, AuthState>(
@@ -75,7 +71,8 @@ class LoginScreen extends StatelessWidget {
                             textAlign: TextAlign.center,
                             keyboardType: TextInputType.emailAddress,
                             decoration: kTestFieldDecoration.copyWith(
-                                hintText: 'Enter your email'),
+                                hintText: 'Enter your email',
+                                errorStyle: TextStyle(color: Colors.red)),
                           ),
                           SizedBox(height: 8.0),
                           TextFormField(
@@ -89,7 +86,8 @@ class LoginScreen extends StatelessWidget {
                             textAlign: TextAlign.center,
                             obscureText: true,
                             decoration: kTestFieldDecoration.copyWith(
-                                hintText: 'Enter your password'),
+                                hintText: 'Enter your password',
+                                errorStyle: TextStyle(color: Colors.red)),
                           ),
                           SizedBox(height: 24.0),
                           RoundedButton(

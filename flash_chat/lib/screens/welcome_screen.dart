@@ -45,10 +45,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              AppColors.matchaLight,
-              AppColors.matchaDark,
-            ],
+            colors: [AppColors().default1, AppColors().default2],
           ),
         ),
         child: Padding(

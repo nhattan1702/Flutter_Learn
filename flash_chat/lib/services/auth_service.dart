@@ -1,11 +1,14 @@
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 import '../models/user_model.dart';
 
 class AuthService {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
 
   Future<User?> createUserWithEmailAndPassword(
       String email, String password) async {
@@ -22,6 +25,42 @@ class AuthService {
       throw SignUpWithEmailAndPasswordFailure();
     }
   }
+
+  // Future<User?> createUserWithEmailAndPassword(
+  //     String email, String password, File image) async {
+  //   try {
+  //     UserCredential userCredential =
+  //         await _firebaseAuth.createUserWithEmailAndPassword(
+  //       email: email,
+  //       password: password,
+  //     );
+
+  //     User? user = userCredential.user;
+
+  //     if (user != null) {
+  //       String fileName = '${user.uid}_${DateTime.now().millisecondsSinceEpoch}';
+  //       Reference storageRef = _firebaseStorage.ref().child('user_images/$fileName');
+  //       UploadTask uploadTask = storageRef.putFile(image);
+
+  //       TaskSnapshot taskSnapshot = await uploadTask;
+  //       String imageUrl = await taskSnapshot.ref.getDownloadURL();
+
+  //       await _firestore.collection('users').doc(user.uid).set({
+  //         'email': email,
+  //         'password': password,
+  //         'imageUrl': imageUrl,
+  //       });
+
+  //       return user;
+  //     }
+
+  //     return null;
+  //   } on FirebaseAuthException catch (e) {
+  //     throw SignUpWithEmailAndPasswordFailure.fromCode(e.code);
+  //   } catch (e) {
+  //     throw SignUpWithEmailAndPasswordFailure();
+  //   }
+  // }
 
   Future<void> saveUserToFirestore(UserModel user) async {
     await _firestore.collection('users').doc(user.id).set(user.toMap());
