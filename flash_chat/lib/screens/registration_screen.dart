@@ -34,43 +34,50 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   bool otpVerified = false;
 
   void sendOTP() async {
-    await _firestoreRepository.sendOTP(
-      phoneNumber: _phoneController.text.trim(),
-      onCodeSent: (String verId) {
-        setState(() {
-          verificationId = verId;
-          otpSent = true;
-        });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('OTP đã được gửi đến số điện thoại của bạn')),
-        );
-      },
-      onVerificationFailed: (FirebaseAuthException e) {
-        if (e.code == 'invalid-phone-number') {
+    if (_formKey.currentState?.validate() ?? false) {
+      await _firestoreRepository.sendOTP(
+        phoneNumber: _phoneController.text.trim(),
+        onCodeSent: (String verId) {
+          setState(() {
+            verificationId = verId;
+            otpSent = true;
+          });
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Số điện thoại không hợp lệ')),
+            SnackBar(
+                content: Text(
+              'OTP đã được gửi đến số điện thoại của bạn',
+            )),
           );
-        }
-      },
-    );
+        },
+        onVerificationFailed: (FirebaseAuthException e) {
+          if (e.code == 'invalid-phone-number') {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Số điện thoại không hợp lệ')),
+            );
+          }
+        },
+      );
+    }
   }
 
   void verifyOTP() async {
-    final bool isVerified = await _firestoreRepository.verifyOTP(
-      verificationId: verificationId,
-      smsCode: _otpController.text.trim(),
-    );
-    if (isVerified) {
-      setState(() {
-        otpVerified = true;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('OTP đúng, tiếp tục đăng ký')),
+    if (_formKey.currentState?.validate() ?? false) {
+      final bool isVerified = await _firestoreRepository.verifyOTP(
+        verificationId: verificationId,
+        smsCode: _otpController.text.trim(),
       );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('OTP không đúng, thử lại')),
-      );
+      if (isVerified) {
+        setState(() {
+          otpVerified = true;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('OTP đúng, tiếp tục đăng ký')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('OTP không đúng, thử lại')),
+        );
+      }
     }
   }
 
@@ -138,6 +145,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           keyboardType: TextInputType.phone,
                           decoration: kTestFieldDecoration.copyWith(
                             hintText: 'Enter your phone number',
+                            errorStyle: TextStyle(color: Colors.red),
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -154,6 +162,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                             keyboardType: TextInputType.number,
                             decoration: kTestFieldDecoration.copyWith(
                               hintText: 'Enter OTP',
+                              errorStyle: TextStyle(color: Colors.red),
                             ),
                             validator: (value) {
                               if (value == null || value.isEmpty) {
@@ -182,8 +191,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           textAlign: TextAlign.center,
                           keyboardType: TextInputType.emailAddress,
                           decoration: kTestFieldDecoration.copyWith(
-                            hintText: 'Enter your email',
-                          ),
+                              hintText: 'Enter your email',
+                              errorStyle: TextStyle(color: Colors.red)),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Không được để trống email';
