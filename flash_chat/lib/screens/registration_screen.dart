@@ -131,107 +131,100 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                         ),
                       ),
                       SizedBox(height: 48.0),
-                      TextFormField(
-                        controller: _phoneController,
-                        textAlign: TextAlign.center,
-                        keyboardType: TextInputType.phone,
-                        decoration: kTestFieldDecoration.copyWith(
-                          hintText: 'Enter your phone number',
+                      if (!otpVerified) ...[
+                        TextFormField(
+                          controller: _phoneController,
+                          textAlign: TextAlign.center,
+                          keyboardType: TextInputType.phone,
+                          decoration: kTestFieldDecoration.copyWith(
+                            hintText: 'Enter your phone number',
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Không được để trống số điện thoại';
+                            }
+                            return null;
+                          },
                         ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Không được để trống số điện thoại';
-                          }
-                          return null;
-                        },
-                      ),
-                      if (otpSent)
-                        Column(
-                          children: [
-                            SizedBox(height: 8.0),
-                            TextFormField(
-                              controller: _otpController,
-                              textAlign: TextAlign.center,
-                              keyboardType: TextInputType.number,
-                              decoration: kTestFieldDecoration.copyWith(
-                                hintText: 'Enter OTP',
-                              ),
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Không được để trống OTP';
-                                }
-                                return null;
-                              },
+                        if (otpSent) ...[
+                          SizedBox(height: 8.0),
+                          TextFormField(
+                            controller: _otpController,
+                            textAlign: TextAlign.center,
+                            keyboardType: TextInputType.number,
+                            decoration: kTestFieldDecoration.copyWith(
+                              hintText: 'Enter OTP',
                             ),
-                            SizedBox(height: 8.0),
-                            RoundedButton(
-                              title: 'Verify OTP',
-                              color: Colors.greenAccent,
-                              onPressed: verifyOTP,
-                            ),
-                          ],
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Không được để trống OTP';
+                              }
+                              return null;
+                            },
+                          ),
+                          SizedBox(height: 8.0),
+                          RoundedButton(
+                            title: 'Verify OTP',
+                            color: Colors.greenAccent,
+                            onPressed: verifyOTP,
+                          ),
+                        ],
+                        SizedBox(height: 8.0),
+                        if (!otpSent)
+                          RoundedButton(
+                            title: 'Send OTP',
+                            color: Colors.blueAccent,
+                            onPressed: sendOTP,
+                          ),
+                      ] else ...[
+                        TextFormField(
+                          controller: _emailController,
+                          textAlign: TextAlign.center,
+                          keyboardType: TextInputType.emailAddress,
+                          decoration: kTestFieldDecoration.copyWith(
+                            hintText: 'Enter your email',
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Không được để trống email';
+                            }
+                            return null;
+                          },
                         ),
-                      SizedBox(height: 8.0),
-                      if (!otpSent)
+                        SizedBox(height: 8.0),
+                        TextFormField(
+                          controller: _passwordController,
+                          textAlign: TextAlign.center,
+                          obscureText: true,
+                          decoration: kTestFieldDecoration.copyWith(
+                              hintText: 'Enter your password',
+                              errorStyle: TextStyle(color: Colors.red)),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Không được để trống mật khẩu';
+                            }
+                            return null;
+                          },
+                        ),
+                        SizedBox(height: 24.0),
                         RoundedButton(
-                          title: 'Send OTP',
+                          title: 'Register',
                           color: Colors.blueAccent,
-                          onPressed: sendOTP,
-                        ),
-                      if (otpVerified)
-                        Column(
-                          children: [
-                            SizedBox(height: 8.0),
-                            TextFormField(
-                              controller: _emailController,
-                              textAlign: TextAlign.center,
-                              keyboardType: TextInputType.emailAddress,
-                              decoration: kTestFieldDecoration.copyWith(
-                                hintText: 'Enter your email',
-                              ),
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Không được để trống email';
-                                }
-                                return null;
-                              },
-                            ),
-                            SizedBox(height: 8.0),
-                            TextFormField(
-                              controller: _passwordController,
-                              textAlign: TextAlign.center,
-                              obscureText: true,
-                              decoration: kTestFieldDecoration.copyWith(
-                                  hintText: 'Enter your password',
-                                  errorStyle: TextStyle(color: Colors.red)),
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Không được để trống mật khẩu';
-                                }
-                                return null;
-                              },
-                            ),
-                            SizedBox(height: 24.0),
-                            RoundedButton(
-                              title: 'Register',
-                              color: Colors.blueAccent,
-                              onPressed: () {
-                                final email = _emailController.text.trim();
-                                final password =
-                                    _passwordController.text.trim();
+                          onPressed: () {
+                            final email = _emailController.text.trim();
+                            final password = _passwordController.text.trim();
 
-                                if (_formKey.currentState!.validate()) {
-                                  context.read<AuthBloc>().add(
-                                        RegisterUserEvent(
-                                          email: email,
-                                          password: password,
-                                        ),
-                                      );
-                                }
-                              },
-                            ),
-                          ],
+                            if (_formKey.currentState!.validate()) {
+                              context.read<AuthBloc>().add(
+                                    RegisterUserEvent(
+                                      email: email,
+                                      password: password,
+                                    ),
+                                  );
+                            }
+                          },
                         ),
+                      ],
                     ],
                   ),
                 ),
