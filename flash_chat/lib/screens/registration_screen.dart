@@ -1,3 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flash_chat/repositories/firestore_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
@@ -19,23 +21,71 @@ class RegistrationScreen extends StatefulWidget {
 }
 
 class _RegistrationScreenState extends State<RegistrationScreen> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirestoreRepository _firestoreRepository = FirestoreRepository();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _otpController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
-  final ImagePicker _picker = ImagePicker();
+  bool otpSent = false;
+  String verificationId = '';
+  bool otpVerified = false;
 
-  Future<void> _pickImage() async {
-    final XFile? pickedFile =
-        await _picker.pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      setState(() {});
+  void sendOTP() async {
+    await _firestoreRepository.sendOTP(
+      phoneNumber: _phoneController.text.trim(),
+      onCodeSent: (String verId) {
+        setState(() {
+          verificationId = verId;
+          otpSent = true;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('OTP đã được gửi đến số điện thoại của bạn')),
+        );
+      },
+      onVerificationFailed: (FirebaseAuthException e) {
+        if (e.code == 'invalid-phone-number') {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Số điện thoại không hợp lệ')),
+          );
+        }
+      },
+    );
+  }
+
+  void verifyOTP() async {
+    final bool isVerified = await _firestoreRepository.verifyOTP(
+      verificationId: verificationId,
+      smsCode: _otpController.text.trim(),
+    );
+    if (isVerified) {
+      setState(() {
+        otpVerified = true;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('OTP đúng, tiếp tục đăng ký')),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('OTP không đúng, thử lại')),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: AppColors().default1,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: AppColors.textColor),
+          onPressed: () {
+            Navigator.pushReplacementNamed(context, LoginScreen.id);
+          },
+        ),
+      ),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -82,78 +132,106 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       ),
                       SizedBox(height: 48.0),
                       TextFormField(
-                        controller: _emailController,
+                        controller: _phoneController,
                         textAlign: TextAlign.center,
-                        keyboardType: TextInputType.emailAddress,
+                        keyboardType: TextInputType.phone,
                         decoration: kTestFieldDecoration.copyWith(
-                          hintText: 'Enter your email',
+                          hintText: 'Enter your phone number',
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Không được để trống email';
+                            return 'Không được để trống số điện thoại';
                           }
                           return null;
-                          // else {
-                          //   return _emailError;
-                          // }
                         },
                       ),
-                      SizedBox(height: 8.0),
-                      TextFormField(
-                        controller: _passwordController,
-                        textAlign: TextAlign.center,
-                        obscureText: true,
-                        decoration: kTestFieldDecoration.copyWith(
-                            hintText: 'Enter your password',
-                            errorStyle: TextStyle(color: Colors.red)),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Không được để trống mật khẩu';
-                          }
-                          return null;
-                          // else {
-                          //   return _passwordError;
-                          // }
-                        },
-                      ),
-                      SizedBox(height: 24.0),
-                      SizedBox(height: 24.0),
-                      RoundedButton(
-                        title: 'Register',
-                        color: Colors.blueAccent,
-                        onPressed: () {
-                          final email = _emailController.text.trim();
-                          final password = _passwordController.text.trim();
-
-                          if (_formKey.currentState!.validate()) {
-                            context.read<AuthBloc>().add(
-                                  RegisterUserEvent(
-                                    email: email,
-                                    password: password,
-                                    // image: _imageFile!,
-                                  ),
-                                );
-                          }
-                        },
-                      ),
-                      SizedBox(height: 12),
-                      InkWell(
-                        onTap: () {
-                          Navigator.pushReplacementNamed(
-                            context,
-                            LoginScreen.id,
-                          );
-                        },
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.end,
+                      if (otpSent)
+                        Column(
                           children: [
-                            Padding(
-                              padding: EdgeInsets.all(10.0),
-                              child: Text("Bạn đã có tài khoản? Đăng Nhập"),
+                            SizedBox(height: 8.0),
+                            TextFormField(
+                              controller: _otpController,
+                              textAlign: TextAlign.center,
+                              keyboardType: TextInputType.number,
+                              decoration: kTestFieldDecoration.copyWith(
+                                hintText: 'Enter OTP',
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Không được để trống OTP';
+                                }
+                                return null;
+                              },
+                            ),
+                            SizedBox(height: 8.0),
+                            RoundedButton(
+                              title: 'Verify OTP',
+                              color: Colors.greenAccent,
+                              onPressed: verifyOTP,
                             ),
                           ],
                         ),
-                      ),
+                      SizedBox(height: 8.0),
+                      if (!otpSent)
+                        RoundedButton(
+                          title: 'Send OTP',
+                          color: Colors.blueAccent,
+                          onPressed: sendOTP,
+                        ),
+                      if (otpVerified)
+                        Column(
+                          children: [
+                            SizedBox(height: 8.0),
+                            TextFormField(
+                              controller: _emailController,
+                              textAlign: TextAlign.center,
+                              keyboardType: TextInputType.emailAddress,
+                              decoration: kTestFieldDecoration.copyWith(
+                                hintText: 'Enter your email',
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Không được để trống email';
+                                }
+                                return null;
+                              },
+                            ),
+                            SizedBox(height: 8.0),
+                            TextFormField(
+                              controller: _passwordController,
+                              textAlign: TextAlign.center,
+                              obscureText: true,
+                              decoration: kTestFieldDecoration.copyWith(
+                                  hintText: 'Enter your password',
+                                  errorStyle: TextStyle(color: Colors.red)),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Không được để trống mật khẩu';
+                                }
+                                return null;
+                              },
+                            ),
+                            SizedBox(height: 24.0),
+                            RoundedButton(
+                              title: 'Register',
+                              color: Colors.blueAccent,
+                              onPressed: () {
+                                final email = _emailController.text.trim();
+                                final password =
+                                    _passwordController.text.trim();
+
+                                if (_formKey.currentState!.validate()) {
+                                  context.read<AuthBloc>().add(
+                                        RegisterUserEvent(
+                                          email: email,
+                                          password: password,
+                                        ),
+                                      );
+                                }
+                              },
+                            ),
+                          ],
+                        ),
                     ],
                   ),
                 ),

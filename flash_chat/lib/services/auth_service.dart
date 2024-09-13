@@ -26,42 +26,6 @@ class AuthService {
     }
   }
 
-  // Future<User?> createUserWithEmailAndPassword(
-  //     String email, String password, File image) async {
-  //   try {
-  //     UserCredential userCredential =
-  //         await _firebaseAuth.createUserWithEmailAndPassword(
-  //       email: email,
-  //       password: password,
-  //     );
-
-  //     User? user = userCredential.user;
-
-  //     if (user != null) {
-  //       String fileName = '${user.uid}_${DateTime.now().millisecondsSinceEpoch}';
-  //       Reference storageRef = _firebaseStorage.ref().child('user_images/$fileName');
-  //       UploadTask uploadTask = storageRef.putFile(image);
-
-  //       TaskSnapshot taskSnapshot = await uploadTask;
-  //       String imageUrl = await taskSnapshot.ref.getDownloadURL();
-
-  //       await _firestore.collection('users').doc(user.uid).set({
-  //         'email': email,
-  //         'password': password,
-  //         'imageUrl': imageUrl,
-  //       });
-
-  //       return user;
-  //     }
-
-  //     return null;
-  //   } on FirebaseAuthException catch (e) {
-  //     throw SignUpWithEmailAndPasswordFailure.fromCode(e.code);
-  //   } catch (e) {
-  //     throw SignUpWithEmailAndPasswordFailure();
-  //   }
-  // }
-
   Future<void> saveUserToFirestore(UserModel user) async {
     await _firestore.collection('users').doc(user.id).set(user.toMap());
   }
@@ -92,7 +56,22 @@ class AuthService {
     } catch (e) {}
     return null;
   }
+
 }
+
+  phoneNumberVerification ({
+    required String phoneNumber,
+  }) async {
+    await FirebaseAuth.instance.verifyPhoneNumber(
+      phoneNumber: phoneNumber,
+      verificationCompleted: (PhoneAuthCredential credential) {}, 
+      verificationFailed: (FirebaseAuthException e) {}, 
+      codeSent: (String verificationId, int? resendToken) {
+        
+      }, 
+      codeAutoRetrievalTimeout: (String verificationId) {},); 
+  }
+
 
 class SignUpWithEmailAndPasswordFailure implements Exception {
   final String message;

@@ -17,14 +17,15 @@ class AppColors {
     Colors.red.shade100,
     Colors.teal,
     Colors.green,
-    Colors.grey,
     matchaDark,
     matchaLight
   ];
 
   void getRandomColor() {
-    default2 = colors[random.nextInt(colors.length)];
     default1 = colors[random.nextInt(colors.length)];
+    do {
+      default2 = colors[random.nextInt(colors.length)];
+    } while (default1 == default2);
   }
 
   static const Color white = Colors.white;

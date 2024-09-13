@@ -1,3 +1,6 @@
+import 'package:flash_chat/common/color.dart';
+import 'package:flash_chat/repositories/firestore_repository.dart';
+import 'package:flash_chat/screens/screens_chat/listchat_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flash_chat/common/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -13,6 +16,7 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   final FirestoreService _firestoreService = FirestoreService();
+  final FirestoreRepository _firestoreRepository = FirestoreRepository();
   final messageTextController = TextEditingController();
   late String messageText;
   User? loggedInUser;
@@ -27,7 +31,7 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   void getCurrentUser() async {
-    final user = await _firestoreService.getCurrentUser();
+    final user = await _firestoreRepository.getCurrentUser();
     if (user != null) {
       setState(() {
         loggedInUser = user;
@@ -50,23 +54,22 @@ class _ChatScreenState extends State<ChatScreen> {
       currentUserEmail = args['currentUserEmail'] ?? '';
       otherUserEmail = args['otherUserEmail'] ?? '';
     }
-
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors().default1,
       appBar: AppBar(
-        centerTitle: true,
-        leading: null,
-        actions: <Widget>[
-          IconButton(
-              icon: Icon(Icons.close),
-              onPressed: () {
-                FirebaseAuth.instance.signOut();
-                Navigator.pop(context);
-              }),
-        ],
-        title: Text('⚡️Chat'),
-        backgroundColor: Colors.lightBlueAccent,
-      ),
+          centerTitle: true,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: AppColors.textColor),
+            onPressed: () {
+              Navigator.pushReplacementNamed(context, ListChatScreen.id);
+            },
+          ),
+          actions: <Widget>[],
+          title: Text(
+            '⚡️Chat',
+            style: TextStyle(color: AppColors.textColor),
+          ),
+          backgroundColor: AppColors().default1),
       body: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -99,7 +102,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     onPressed: () {
                       messageTextController.clear();
                       if (loggedInUser != null) {
-                        _firestoreService.sendMessage(
+                        _firestoreRepository.sendMessage(
                             messageText, currentUserEmail, otherUserEmail);
                         WidgetsBinding.instance.addPostFrameCallback((_) {
                           _scrollController.animateTo(

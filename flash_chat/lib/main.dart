@@ -10,8 +10,9 @@ import 'package:flash_chat/screens/login_screen.dart';
 import 'package:flash_chat/screens/registration_screen.dart';
 import 'package:flash_chat/screens/screens_chat/chat_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:firebase_app_check/firebase_app_check.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
       options: FirebaseOptions(
@@ -21,6 +22,10 @@ void main() async {
     projectId: 'flash-chat-523fc',
     storageBucket: 'flash-chat-523fc.appspot.com',
   ));
+  await FirebaseAppCheck.instance.activate(
+    webProvider: ReCaptchaV3Provider('recaptcha-v3-site-key'),
+    androidProvider: AndroidProvider.debug,
+  );
   runApp(FlashChat());
 }
 

@@ -5,33 +5,8 @@ class FirestoreService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  Future<User?> getCurrentUser() async {
-    try {
-      return _auth.currentUser;
-    } catch (e) {
-      print(e);
-      return null;
-    }
-  }
-
-  Stream<QuerySnapshot> getMessagesStream(
-      String currentUserEmail, String otherUserEmail) {
-    String chatId = getChatId(currentUserEmail, otherUserEmail);
-    return _firestore
-        .collection('messages')
-        .where('chatId', isEqualTo: chatId)
-        .orderBy('time')
-        .snapshots();
-  }
-
-  String getChatId(String user1, String user2) {
-    List<String> users = [user1, user2]..sort();
-    return users.join('_');
-  }
-
-  Future<void> sendMessage(
-      String messageText, String senderEmail, String receiverEmail) async {
-    String chatId = getChatId(senderEmail, receiverEmail);
+  Future<void> sendMessage(String chatId, String messageText,
+      String senderEmail, String receiverEmail) async {
     await _firestore.collection('messages').add({
       'message': messageText,
       'sender': senderEmail,
@@ -41,23 +16,47 @@ class FirestoreService {
     });
   }
 
-  Future<List<Map<String, dynamic>>> getUsers() async {
+  Stream<QuerySnapshot> getMessagesStream(String chatId) {
+    return _firestore
+        .collection('messages')
+        .where('chatId', isEqualTo: chatId)
+        .orderBy('time')
+        .snapshots();
+  }
+
+  Future<QuerySnapshot> getUsers() async {
+    return await _firestore.collection('users').get();
+  }
+
+  Future<void> sendOTP({
+    required String phoneNumber,
+    required Function(String verificationId) onCodeSent,
+    required Function(FirebaseAuthException) onVerificationFailed,
+  }) async {
+    await _auth.verifyPhoneNumber(
+      phoneNumber: phoneNumber,
+      verificationCompleted: (PhoneAuthCredential credential) {},
+      verificationFailed: onVerificationFailed,
+      codeSent: (String verificationId, int? resendToken) {
+        onCodeSent(verificationId);
+      },
+      codeAutoRetrievalTimeout: (String verificationId) {},
+    );
+  }
+
+  Future<bool> verifyOTP({
+    required String verificationId,
+    required String smsCode,
+  }) async {
     try {
-      final currentUser = await getCurrentUser();
-      if (currentUser == null) {
-        return [];
-      }
-
-      final currentUserEmail = currentUser.email;
-
-      final snapshot = await _firestore.collection('users').get();
-      return snapshot.docs
-          .where((doc) => doc['email'] != currentUserEmail)
-          .map((doc) => doc.data())
-          .toList();
+      PhoneAuthCredential credential = PhoneAuthProvider.credential(
+        verificationId: verificationId,
+        smsCode: smsCode,
+      );
+      await _auth.signInWithCredential(credential);
+      return true;
     } catch (e) {
-      print(e);
-      return [];
+      return false;
     }
   }
 }

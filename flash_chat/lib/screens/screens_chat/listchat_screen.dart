@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../common/color.dart';
+import '../../repositories/firestore_repository.dart';
 import '../../services/firestore_service.dart';
 import '../login_screen.dart';
 import 'chat_screen.dart';
@@ -13,6 +14,7 @@ class ListChatScreen extends StatefulWidget {
 
 class _ListChatScreenState extends State<ListChatScreen> {
   final FirestoreService _firestoreService = FirestoreService();
+  final FirestoreRepository _firestoreRepository = FirestoreRepository();
   List<Map<String, dynamic>> _users = [];
   String? _currentUserEmail;
 
@@ -23,8 +25,8 @@ class _ListChatScreenState extends State<ListChatScreen> {
   }
 
   Future<void> _fetchUsers() async {
-    final users = await _firestoreService.getUsers();
-    final currenUser = await _firestoreService.getCurrentUser();
+    final users = await _firestoreRepository.getUsers();
+    final currenUser = await _firestoreRepository.getCurrentUser();
     setState(() {
       _users = users;
       _currentUserEmail = currenUser?.email;
@@ -35,11 +37,12 @@ class _ListChatScreenState extends State<ListChatScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: Text(
           'Danh Sách Chat',
           style: TextStyle(color: AppColors.textColor),
         ),
-        backgroundColor: AppColors.matchaLight,
+        backgroundColor: AppColors().default1,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: AppColors.textColor),
           onPressed: () {

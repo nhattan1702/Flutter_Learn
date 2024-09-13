@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import '../../repositories/firestore_repository.dart';
 import 'message_bubble.dart';
 import 'package:flash_chat/services/firestore_service.dart';
 
@@ -10,10 +11,12 @@ class MessagesStream extends StatefulWidget {
   final String otherUserEmail;
   final ScrollController scrollController;
 
+  final FirestoreRepository _firestoreRepository = FirestoreRepository();
+
   MessagesStream({
     required this.firestoreService,
     required this.loggedInUser,
-    required this.scrollController, 
+    required this.scrollController,
     required this.otherUserEmail,
   });
 
@@ -25,7 +28,8 @@ class _MessagesStreamState extends State<MessagesStream> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: widget.firestoreService.getMessagesStream(widget.loggedInUser.email!, widget.otherUserEmail),
+      stream: widget._firestoreRepository
+          .getMessagesStream(widget.loggedInUser.email!, widget.otherUserEmail),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           final messages = snapshot.data!.docs;
@@ -34,7 +38,7 @@ class _MessagesStreamState extends State<MessagesStream> {
           for (var message in messages) {
             final messageData = message.data() as Map<String, dynamic>;
             final messageText = messageData['message'] as String?;
-            final messageSender = messageData['sender'] as String?; 
+            final messageSender = messageData['sender'] as String?;
 
             if (messageText != null && messageSender != null) {
               final messageBubble = MessageBubble(
